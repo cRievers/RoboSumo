@@ -22,32 +22,32 @@
 #include <Ultrasonic.h>
  
 Ultrasonic ultrasonic(8, 7);  // Trigger e Echo
-int encoderPin = 3;
-volatile unsigned long totalPulses = 0;
-//20 buracos no disco para 360 graus, então pela divisão dá 18 graus por buraco
-volatile int anglePerPulse = 18;
-//angulo total calculado pelos pulsos totais
-volatile long totalAngle = 0;
+// int encoderPin = 3;
+// volatile unsigned long totalPulses = 0;
+// //20 buracos no disco para 360 graus, então pela divisão dá 18 graus por buraco
+// volatile int anglePerPulse = 18;
+// //angulo total calculado pelos pulsos totais
+// volatile long totalAngle = 0;
 
-//variaveis para medir tempo
-volatile unsigned long lastTime =0;
-volatile unsigned long currentTime=0;
-volatile double deltaTime = 0;
+// //variaveis para medir tempo
+// volatile unsigned long lastTime =0;
+// volatile unsigned long currentTime=0;
+// volatile double deltaTime = 0;
 
-//velocidade calculada a partir das variaveis acima em RPM
-volatile double rpm=0;
-//tempo total até que a soma dos pulsos chegue à pulsosMedicao
-volatile unsigned long timeAvgVelocidade = 0;
-//somaPulsos vai de 0 a avgSample e depois vai a 0
-volatile int somaPulsos=0;
-//qts pulsos vai levar pra calcular a média de velocidade
-volatile int pulsosMedicao = 50;
-// Pulsos por revolução (360 / anglePerPulse)
-const int pulsesPerRev = 20;
+// //velocidade calculada a partir das variaveis acima em RPM
+// volatile double rpm=0;
+// //tempo total até que a soma dos pulsos chegue à pulsosMedicao
+// volatile unsigned long timeAvgVelocidade = 0;
+// //somaPulsos vai de 0 a avgSample e depois vai a 0
+// volatile int somaPulsos=0;
+// //qts pulsos vai levar pra calcular a média de velocidade
+// volatile int pulsosMedicao = 50;
+// // Pulsos por revolução (360 / anglePerPulse)
+// const int pulsesPerRev = 20;
 
 void setup() {
-  pinMode(encoderPin, INPUT);   // Sensor de velocidade encoder
-  attachInterrupt(digitalPinToInterrupt(encoderPin), interruptFunction, RISING); // 
+  // pinMode(encoderPin, INPUT);   // Sensor de velocidade encoder
+  // attachInterrupt(digitalPinToInterrupt(encoderPin), interruptFunction, RISING); // 
 
   pinMode(11, INPUT);  // Sensor de linha
   pinMode(12, INPUT);  // Sensor de linha
@@ -107,55 +107,55 @@ void loop() {
   delay(1);
 }
 
-void interruptFunction(){
-  currentTime=millis();
-  deltaTime=currentTime-lastTime;
-  //increment the total number of pulses
-  totalPulses ++;
-  totalAngle= totalPulses * anglePerPulse;
+// void interruptFunction(){
+//   currentTime=millis();
+//   deltaTime=currentTime-lastTime;
+//   //increment the total number of pulses
+//   totalPulses ++;
+//   totalAngle= totalPulses * anglePerPulse;
 
-  somaPulsos++;
-  timeAvgVelocidade += deltaTime;
+//   somaPulsos++;
+//   timeAvgVelocidade += deltaTime;
 
-  if(somaPulsos >= pulsosMedicao){
-    rpm = ((double)somaPulsos * 60000.0) / ((double)timeAvgVelocidade * pulsesPerRev);
-    Serial.print("Velocidade: ");
-    Serial.print(rpm);
-    Serial.println(" RPM");
-    somaPulsos=0;
-    timeAvgVelocidade=0;
-  }
+//   if(somaPulsos >= pulsosMedicao){
+//     rpm = ((double)somaPulsos * 60000.0) / ((double)timeAvgVelocidade * pulsesPerRev);
+//     Serial.print("Velocidade: ");
+//     Serial.print(rpm);
+//     Serial.println(" RPM");
+//     somaPulsos=0;
+//     timeAvgVelocidade=0;
+//   }
 
-  lastTime=millis();
+//   lastTime=millis();
 
-}
+// }
  
 void re() {
   //Serial.println("Re");
   analogWrite(5, 0);
-  analogWrite(6, 150);
+  analogWrite(6, 255);
   analogWrite(9, 0);
-  analogWrite(10, 150);
+  analogWrite(10, 255);
 }
 void frente() {
   //Serial.println("Frente");
-  analogWrite(5, 150);
+  analogWrite(5, 255);
   analogWrite(6, 0);
-  analogWrite(9, 150);
+  analogWrite(9, 255);
   analogWrite(10, 0);
 }
 void girar() {
   //Serial.println("Girando");
   analogWrite(5, 0);
-  analogWrite(6, 150);
-  analogWrite(9, 150);
+  analogWrite(6, 255);
+  analogWrite(9, 255);
   analogWrite(10, 0);
 }
 void atacar() {
   //Serial.println("Atacar");
-  analogWrite(5, 200);
+  analogWrite(5, 255);
   analogWrite(6, 0);
-  analogWrite(9, 200);
+  analogWrite(9, 255);
   analogWrite(10, 0);
 }
 void stop() {
