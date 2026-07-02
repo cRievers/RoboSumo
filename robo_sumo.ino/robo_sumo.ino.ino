@@ -1,9 +1,9 @@
 #include <Ultrasonic.h>
 
 // Pinos dos Sensores de Linha
-int s_linha_tras = A0;
-int s_linha_esq = A2;
-int s_linha_dir = A4;
+int s_linha_tras = A1;
+int s_linha_esq = A0;
+int s_linha_dir = A2;
 
 const int LIMIAR_LINHA = 100; 
 
@@ -34,6 +34,7 @@ void loop() {
   int leitura_esq = analogRead(s_linha_esq);
   int leitura_dir = analogRead(s_linha_dir);
 
+
   // 2. Transforma os números em "Verdadeiro" ou "Falso" (Facilita a leitura do código)
   bool tocou_tras = (leitura_tras > LIMIAR_LINHA);
   bool tocou_esq = (leitura_esq > LIMIAR_LINHA);
@@ -45,7 +46,7 @@ void loop() {
   // Cuidado Máximo: A traseira tocou na linha!
   if (tocou_tras) {
     stop();
-    frente();           // Acelera para o centro imediatamente
+    frente_busca();           // Acelera para o centro imediatamente
     delay(600);
     stop();
   }
@@ -91,7 +92,7 @@ void loop() {
     if (centimetros < 30 && centimetros > 0) {
       atacar(); 
     } else {
-      frente(); // Modo de busca
+      frente_busca(); // Modo de busca
     }
   }
   
@@ -106,10 +107,11 @@ void re() {
   analogWrite(10, 255);
 }
 
-void frente() {
-  analogWrite(5, 255);
+void frente_busca() {
+  // Velocidade reduzida para dar tempo de ler a linha e frear
+  analogWrite(5, 150); 
   analogWrite(6, 0);
-  analogWrite(9, 255);
+  analogWrite(9, 150);
   analogWrite(10, 0);
 }
 
@@ -135,8 +137,9 @@ void atacar() {
 }
 
 void stop() {
-  analogWrite(5, 0);
-  analogWrite(6, 0);
-  analogWrite(9, 0);
-  analogWrite(10, 0);
+  // Enviar 255 para todos os pinos da Ponte H trava os motores na hora
+  analogWrite(5, 255);
+  analogWrite(6, 255);
+  analogWrite(9, 255);
+  analogWrite(10, 255);
 }
