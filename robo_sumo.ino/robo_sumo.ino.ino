@@ -2,10 +2,10 @@
 
 // Pinos dos Sensores de Linha
 int s_linha_tras = A1;
-int s_linha_esq = A0;
-int s_linha_dir = A2;
+int s_linha_esq = A2;
+int s_linha_dir = A0;
 
-const int LIMIAR_LINHA = 100; 
+const int LIMIAR_LINHA = 40; 
 
 Ultrasonic ultrasonic(8, 7);  // Trigger(8) e Echo(7)
 
@@ -33,6 +33,8 @@ void loop() {
   int leitura_tras = analogRead(s_linha_tras);
   int leitura_esq = analogRead(s_linha_esq);
   int leitura_dir = analogRead(s_linha_dir);
+  Serial.print(leitura_tras);
+  Serial.println();
 
 
   // 2. Transforma os números em "Verdadeiro" ou "Falso" (Facilita a leitura do código)
@@ -42,58 +44,58 @@ void loop() {
 
   // === ESTRATÉGIA DE DEFESA (SENSORES DE LINHA) ===
   // O código agora avalia do cenário mais crítico para o mais simples
-
-  // Cuidado Máximo: A traseira tocou na linha!
-  if (tocou_tras) {
-    stop();
-    frente_busca();           // Acelera para o centro imediatamente
-    delay(600);
-    stop();
-  }
   
   // Combinação: Bateu os DOIS sensores frontais na linha ao mesmo tempo
-  else if (tocou_esq && tocou_dir) {
+  if (tocou_esq && tocou_dir) {
     stop();
     re();
-    delay(600);         // Recua um pouco mais de tempo
+    delay(400);         // Recua um pouco mais de tempo
     stop();
     girar_direita();    // Como bateu de frente, faz um giro maior (ex: 180 graus) para voltar ao centro
-    delay(600);         
+    delay(900);         
     stop();
   }
   
   // Individual: Tocou APENAS o da Esquerda
-  else if (tocou_esq) {
+  if (tocou_esq) {
     stop();
     re();
-    delay(200);         
+    delay(400);         
     stop();
     girar_direita();    // Foge para o lado oposto
-    delay(300);
+    delay(1000);
     stop();
   }
   
   // Individual: Tocou APENAS o da Direita
-  else if (tocou_dir) {
+  if (tocou_dir) {
     stop();
     re();
-    delay(200);         
+    delay(400);         
     stop();
     girar_esquerda();   // Foge para o lado oposto
-    delay(300);
+    delay(700);
     stop();
   }
   
-  // === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
-  else {
-    int centimetros = ultrasonic.read(CM);
-    
-    // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
-    if (centimetros < 30 && centimetros > 0) {
-      atacar(); 
-    } else {
-      frente_busca(); // Modo de busca
-    }
+  // Cuidado Máximo: A traseira tocou na linha!
+  if (tocou_tras) {
+    stop();
+    frente_busca();           // Acelera para o centro imediatamente
+    delay(400);
+    stop();
+  }
+  
+// === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
+  int centimetros = ultrasonic.read(CM);
+  //Serial.print(centimetros);
+  //Serial.println();
+  
+  // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
+  if (centimetros < 30 && centimetros > 0) {
+    atacar();
+  } else {
+    frente_busca(); // Modo de busca
   }
   
   delay(1);
