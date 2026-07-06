@@ -5,7 +5,7 @@ int s_linha_tras = A1;
 int s_linha_esq = A2;
 int s_linha_dir = A0;
 
-const int LIMIAR_LINHA = 40; 
+const int LIMIAR_LINHA = 47; 
 
 Ultrasonic ultrasonic(8, 7);  // Trigger(8) e Echo(7)
 
@@ -26,16 +26,30 @@ void setup() {
     stop();
     Serial.println("Aguardando ligar...");
   }
+
+  Serial.println("Botão pressionado! Iniciando em 8 segundos...");
+  stop();       // Garante que os motores fiquem totalmente travados durante a contagem
+  delay(8000);
+  Serial.println("Iniciando o loop!");
+
 }
 
 void loop() {
+  // === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
+  int centimetros = ultrasonic.read(CM);
+  //Serial.print(centimetros);
+  //Serial.println();
+  
+  // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
+  if (centimetros < 30 && centimetros > 0) {
+    atacar();
+    delay(200);
+  }
+
   // 1. Faz a leitura numérica de todos os sensores
   int leitura_tras = analogRead(s_linha_tras);
   int leitura_esq = analogRead(s_linha_esq);
   int leitura_dir = analogRead(s_linha_dir);
-  Serial.print(leitura_tras);
-  Serial.println();
-
 
   // 2. Transforma os números em "Verdadeiro" ou "Falso" (Facilita a leitura do código)
   bool tocou_tras = (leitura_tras > LIMIAR_LINHA);
@@ -85,18 +99,8 @@ void loop() {
     delay(400);
     stop();
   }
-  
-// === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
-  int centimetros = ultrasonic.read(CM);
-  //Serial.print(centimetros);
-  //Serial.println();
-  
-  // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
-  if (centimetros < 30 && centimetros > 0) {
-    atacar();
-  } else {
-    frente_busca(); // Modo de busca
-  }
+
+  frente_busca();
   
   delay(1);
 }
@@ -111,9 +115,9 @@ void re() {
 
 void frente_busca() {
   // Velocidade reduzida para dar tempo de ler a linha e frear
-  analogWrite(5, 150); 
+  analogWrite(5, 160); 
   analogWrite(6, 0);
-  analogWrite(9, 150);
+  analogWrite(9, 160);
   analogWrite(10, 0);
 }
 
