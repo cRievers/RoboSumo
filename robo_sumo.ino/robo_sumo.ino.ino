@@ -5,9 +5,9 @@ int s_linha_tras = A1;
 int s_linha_esq = A2;
 int s_linha_dir = A0;
 
-const int limiar_dir = 50; //46
-const int limiar_esq = 30; //26
-const int limiar_tras = 40; //34
+const int limiar_dir = 70; //46
+const int limiar_esq = 40; //26
+const int limiar_tras = 50; //34
 
 Ultrasonic ultrasonic(8, 7);  // Trigger(8) e Echo(7)
 
@@ -63,7 +63,7 @@ void loop() {
   }
   
   // Individual: Tocou APENAS o da Esquerda
-  if (tocou_esq) {
+  else if (tocou_esq) {
     stop();
     re();
     delay(400);         
@@ -74,7 +74,7 @@ void loop() {
   }
   
   // Individual: Tocou APENAS o da Direita
-  if (tocou_dir) {
+  else if (tocou_dir) {
     stop();
     re();
     delay(400);         
@@ -85,7 +85,7 @@ void loop() {
   }
   
   // Cuidado Máximo: A traseira tocou na linha!
-  if (tocou_tras) {
+  else if (tocou_tras) {
     stop();
     frente_busca();           // Acelera para o centro imediatamente
     delay(400);
