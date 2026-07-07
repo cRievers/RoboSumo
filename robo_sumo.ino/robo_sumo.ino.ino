@@ -5,7 +5,9 @@ int s_linha_tras = A1;
 int s_linha_esq = A2;
 int s_linha_dir = A0;
 
-const int LIMIAR_LINHA = 47; 
+const int limiar_dir = 50; //46
+const int limiar_esq = 30; //26
+const int limiar_tras = 40; //34
 
 Ultrasonic ultrasonic(8, 7);  // Trigger(8) e Echo(7)
 
@@ -27,24 +29,14 @@ void setup() {
     Serial.println("Aguardando ligar...");
   }
 
-  Serial.println("Botão pressionado! Iniciando em 8 segundos...");
+  Serial.println("Botão pressionado! Iniciando em 3 segundos...");
   stop();       // Garante que os motores fiquem totalmente travados durante a contagem
-  delay(8000);
+  delay(3000);
   Serial.println("Iniciando o loop!");
 
 }
 
 void loop() {
-  // === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
-  int centimetros = ultrasonic.read(CM);
-  //Serial.print(centimetros);
-  //Serial.println();
-  
-  // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
-  if (centimetros < 30 && centimetros > 0) {
-    atacar();
-    delay(200);
-  }
 
   // 1. Faz a leitura numérica de todos os sensores
   int leitura_tras = analogRead(s_linha_tras);
@@ -52,9 +44,9 @@ void loop() {
   int leitura_dir = analogRead(s_linha_dir);
 
   // 2. Transforma os números em "Verdadeiro" ou "Falso" (Facilita a leitura do código)
-  bool tocou_tras = (leitura_tras > LIMIAR_LINHA);
-  bool tocou_esq = (leitura_esq > LIMIAR_LINHA);
-  bool tocou_dir = (leitura_dir > LIMIAR_LINHA);
+  bool tocou_tras = (leitura_tras > limiar_tras);
+  bool tocou_esq = (leitura_esq > limiar_esq);
+  bool tocou_dir = (leitura_dir > limiar_dir);
 
   // === ESTRATÉGIA DE DEFESA (SENSORES DE LINHA) ===
   // O código agora avalia do cenário mais crítico para o mais simples
@@ -99,8 +91,18 @@ void loop() {
     delay(400);
     stop();
   }
-
+  // === ESTRATÉGIA DE ATAQUE (Nenhuma linha detectada) ===
+  int centimetros = ultrasonic.read(CM);
+  //Serial.print(centimetros);
+  //Serial.println();
+  
+  // Ignora o valor 357 (erro de leitura) e procura objetos a menos de 30cm
+  if (centimetros < 30) {
+    atacar();
+    delay(200);
+  }else{
   frente_busca();
+  }
   
   delay(1);
 }
